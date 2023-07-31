@@ -3,30 +3,45 @@ import { useAuth } from "../authContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState(null);
   const { login } = useAuth();
   const [formErrors, setFormErrors] = useState({
-    name: false,
-    password: false,
-    passwordConfirm: false,
+    email: "",
+    password: "",
+    passwordConfirm: "",
   });
   const navigator = useNavigate();
 
   const api = process.env.REACT_APP_API_BASE_URL;
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
   const validateForm = () => {
     const updatedErrors = {
-      username: username.trim() === "",
-      password: password.trim() === "",
+      email: !emailRegex.test(email),
+      password: !passwordRegex.test(password),
       passwordConfirm:
-        password.trim() !== passwordConfirm.trim() ||
-        passwordConfirm.trim() === "",
+        password !== passwordConfirm || passwordConfirm.trim() === "",
+    };
+    const errorMessages = {
+      email: "Please enter a valid email address",
+      password:
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (!, @, #, $, %, ^, &, *).",
+      passwordConfirm: "Passwords do not match",
     };
 
-    setFormErrors(updatedErrors);
+    setFormErrors({
+      email: updatedErrors.email ? errorMessages.email : "",
+      password: updatedErrors.password ? errorMessages.password : "",
+      passwordConfirm: updatedErrors.passwordConfirm
+        ? errorMessages.passwordConfirm
+        : "",
+    });
 
     return Object.values(updatedErrors).every((error) => !error);
   };
@@ -44,7 +59,7 @@ const Signup = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -59,7 +74,7 @@ const Signup = () => {
 
       // Save the token and user info in local storage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // Redirect to the authenticated home page
       navigator("/main");
@@ -71,16 +86,17 @@ const Signup = () => {
   return (
     <div className="signup">
       <form>
-        <label htmlFor="username">Username</label>
+        <h1>Welcome to Odin Book</h1>
+        <label htmlFor="email">Email</label>
         <input
-          id="username"
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          id="email"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        {formErrors.username && (
-          <p className="error-message">This field is required</p>
+        {formErrors.email !== "" && (
+          <p className="error-message">{formErrors.email}</p>
         )}
         <label htmlFor="password">Password</label>
         <input
@@ -90,8 +106,8 @@ const Signup = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {formErrors.password && (
-          <p className="error-message">This field is required</p>
+        {formErrors.password !== "" && (
+          <p className="error-message">{formErrors.password}</p>
         )}
         <label htmlFor="confirm-password">Confirm Password</label>
         <input
@@ -101,8 +117,8 @@ const Signup = () => {
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         />
-        {formErrors.passwordConfirm && (
-          <p className="error-message">Passwords do not match</p>
+        {formErrors.passwordConfirm !== "" && (
+          <p className="error-message">{formErrors.passwordConfirm}</p>
         )}
         <button onClick={handleSignup}>Signup</button>
         {error && <p className="error-message">{error}</p>}

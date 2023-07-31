@@ -12,14 +12,17 @@ function Header() {
     window.location.href = "/";
   };
 
-  return (
+  return isAuthenticated ? (
     <div className="header">
-      <h1>Title</h1>
-      <Link to="/login">Login</Link>
-      <Link to="/signup">Signup</Link>
+      <h1>OdinBook</h1>
+      <div className="menu-buttons">
+        <Link to="/main">Home</Link>
+        <Link to="/friends">Friends</Link>
+        <Link to="/profile">Profile</Link>
+      </div>
       <button onClick={signout}>Logout</button>
     </div>
-  );
+  ) : null;
 }
 
 export default Header;
