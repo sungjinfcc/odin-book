@@ -68,7 +68,7 @@ const Login = () => {
       login(data.token, data.user);
 
       // Save the token and user info in local storage
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", JSON.stringify(data.token));
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // Redirect to the authenticated home page
@@ -86,7 +86,10 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: "aaa@aaa.aaa", password: "Aaaa1111!" }),
+        body: JSON.stringify({
+          email: process.env.REACT_APP_EMAIL,
+          password: process.env.REACT_APP_PASSWORD,
+        }),
       });
 
       if (!response.ok) {

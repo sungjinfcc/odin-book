@@ -73,7 +73,7 @@ const Signup = () => {
       login(data.token, data.user);
 
       // Save the token and user info in local storage
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", JSON.stringify(data.token));
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // Redirect to the authenticated home page
