@@ -5,7 +5,8 @@ import Home from "./Components/Home";
 import Signup from "./Components/Signup";
 import Login from "./Components/Login";
 import Main from "./Components/Main";
-import Footer from "./Components/Footer";
+import Friends from "./Components/Friends";
+import Profile from "./Components/Profile";
 import Header from "./Components/Header";
 import { useAuth } from "./authContext";
 
@@ -31,8 +32,9 @@ function App() {
         <Route path="/main" element={<Main />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/friends" element={<Friends />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
-      <Footer />
     </HashRouter>
   );
 }

@@ -9,7 +9,7 @@ exports.post_list = asyncHandler(async (req, res, next) => {
     .populate("author")
     .populate("likedUsers")
     .populate("comments")
-    .sort({ timestamp: 1 })
+    .sort({ timestamp: -1 })
     .exec();
 
   res.json(allPosts);
@@ -27,7 +27,6 @@ exports.posts_by_user = asyncHandler(async (req, res, next) => {
 });
 
 exports.create_post = [
-  body("title", "Title field is required").trim().isLength({ min: 1 }).escape(),
   body("content", "Content field is required")
     .trim()
     .isLength({ min: 1 })
@@ -48,7 +47,6 @@ exports.create_post = [
 
       const newPost = new Post({
         author: req.user._id,
-        title: req.body.title,
         content: req.body.content,
       });
       user.posts.push(newPost._id);
@@ -62,7 +60,6 @@ exports.create_post = [
 ];
 
 exports.update_post = [
-  body("title", "Title field is required").trim().isLength({ min: 1 }).escape(),
   body("content", "Content field is required")
     .trim()
     .isLength({ min: 1 })
@@ -86,7 +83,6 @@ exports.update_post = [
           message: "Post not found",
         });
       }
-      post.title = req.body.title;
       post.content = req.body.content;
       await post.save();
       return res.json({
@@ -116,6 +112,11 @@ exports.like_post = asyncHandler(async (req, res, next) => {
   if (!user) {
     return res.status(404).json({
       message: "User not found",
+    });
+  }
+  if (user.likedPosts.includes(post._id)) {
+    return res.status(400).json({
+      message: "Already Liked!",
     });
   }
   user.likedPosts.push(post._id);

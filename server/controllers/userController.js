@@ -41,7 +41,9 @@ exports.login = [
     }
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email })
+      .populate("friends")
+      .populate("friendRequests");
 
     if (!user) {
       return res.status(400).json({
@@ -122,12 +124,18 @@ exports.signup = [
   }),
 ];
 exports.user_list = asyncHandler(async (req, res, next) => {
-  const allUsers = await User.find().sort({ username: 1 }).exec();
+  const allUsers = await User.find()
+    .sort({ username: 1 })
+    .populate("friends")
+    .populate("friendRequests")
+    .exec();
 
   res.json(allUsers);
 });
 exports.get_user = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.user_id).exec();
+  const user = await User.findById(req.params.user_id)
+    .populate("friends")
+    .exec();
 
   res.json(user);
 });
