@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../authContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 function formatDate(timestamp) {
   const date = new Date(timestamp);
@@ -185,7 +187,9 @@ function Post({ post }) {
       <div className="content">
         <p className="message">{post.content}</p>
         <div className="numbers">
-          <p>{post.likedUsers.length} liked</p>
+          <p className="like">
+            <FontAwesomeIcon icon={faHeart} /> {post.likedUsers.length}
+          </p>
           <p>{post.comments.length} comments</p>
         </div>
       </div>

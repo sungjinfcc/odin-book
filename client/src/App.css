@@ -284,6 +284,9 @@ img {
   justify-content: space-between;
   margin-top: 2rem;
 }
+.post .content .numbers .like {
+  color: red;
+}
 .post .buttons {
   display: flex;
   gap: 1rem;
