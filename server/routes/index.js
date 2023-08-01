@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const authenticateToken = require("../middlewares/authenticateToken");
+const uploadFile = require("../middlewares/uploadFile");
 
 const user_controller = require("../controllers/userController");
 const post_controller = require("../controllers/postController");
@@ -27,17 +28,8 @@ router.delete(
 router.post(
   "/user/:user_id/add_photo",
   authenticateToken,
+  uploadFile,
   user_controller.add_photo
-);
-router.put(
-  "/user/:user_id/update_photo",
-  authenticateToken,
-  user_controller.update_photo
-);
-router.delete(
-  "/user/:user_id/delete_photo",
-  authenticateToken,
-  user_controller.delete_photo
 );
 
 router.post(

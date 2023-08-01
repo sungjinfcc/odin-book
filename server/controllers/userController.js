@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const path = require("path");
+const fs = require("fs/promises");
 
 const User = require("../models/user");
 
@@ -47,7 +49,7 @@ exports.login = [
 
     if (!user) {
       return res.status(400).json({
-        message: "No user found",
+        message: "User not found",
       });
     }
 
@@ -190,15 +192,39 @@ exports.delete_user = asyncHandler(async (req, res, next) => {
 });
 
 exports.add_photo = asyncHandler(async (req, res, next) => {
-  return res.json({ message: "add_photo" });
-});
-exports.update_photo = asyncHandler(async (req, res, next) => {
-  return res.json({ message: "update_photo" });
-});
-exports.delete_photo = asyncHandler(async (req, res, next) => {
-  return res.json({ message: "delete_photo" });
-});
+  try {
+    const photoUrl = `/uploads/${req.file.filename}`;
 
+    const user = await User.findById(req.params.user_id).exec();
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (user.photo !== "") {
+      const previousPhotoPath = path.join(__dirname, "..", user.photo);
+      console.log(`Deleting file from ${previousPhotoPath}`);
+      try {
+        await fs.unlink(previousPhotoPath);
+      } catch (err) {
+        console.error("Error deleting previous photo:", err);
+      }
+    }
+
+    user.photo = photoUrl;
+
+    await user.save();
+
+    return res.json({
+      user: user,
+      message: "Photo added",
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to upload photo" });
+  }
+});
 exports.add_friend = [
   body("friendId", "Friend ID is required").escape(),
   asyncHandler(async (req, res, next) => {

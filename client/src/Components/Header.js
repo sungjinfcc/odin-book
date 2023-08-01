@@ -1,24 +1,38 @@
 import React from "react";
 import { useAuth } from "../authContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { faIdCard } from "@fortawesome/free-solid-svg-icons";
+import { faBook } from "@fortawesome/free-solid-svg-icons";
 
 function Header() {
   const { isAuthenticated, logout } = useAuth();
+  const navigator = useNavigate();
 
   const signout = () => {
     logout();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigator("/");
   };
 
   return isAuthenticated ? (
-    <div className="header">
-      <h1>OdinBook</h1>
-      <div className="menu-buttons">
-        <Link to="/main">Home</Link>
-        <Link to="/friends">Friends</Link>
-        <Link to="/profile">Profile</Link>
+    <div className="header responsive">
+      <h1>
+        <FontAwesomeIcon icon={faBook} /> Odin Book
+      </h1>
+      <div className="menu-buttons responsive">
+        <Link to="/main">
+          <FontAwesomeIcon icon={faHouse} />
+        </Link>
+        <Link to="/friends">
+          <FontAwesomeIcon icon={faUserGroup} />
+        </Link>
+        <Link to="/profile">
+          <FontAwesomeIcon icon={faIdCard} />
+        </Link>
       </div>
       <button onClick={signout}>Logout</button>
     </div>

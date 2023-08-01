@@ -32,15 +32,26 @@ const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 1000,
 });
+const corsOptions = {
+  origin: "http://localhost:3001", // Replace with the correct frontend URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // If you are using cookies or authentication headers
+};
+
+app.use(cors(corsOptions));
 app.use(compression());
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 app.use(limiter);
-app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api", indexRouter);
 

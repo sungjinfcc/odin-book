@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { useAuth } from "../../authContext";
 
 function formatDate(timestamp) {
@@ -22,18 +21,18 @@ function Post({ post }) {
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
   const [comments, setComments] = useState([]);
-  const validateForm = () => {
-    const updatedErrors = {
-      content: content.trim() === "",
-    };
-
-    return Object.values(updatedErrors).every((error) => !error);
-  };
+  const imageUrl = `${process.env.PUBLIC_URL}/assets/person_icon.png`;
+  const [formErrors, setFormErrors] = useState({
+    content: "",
+    message: "",
+  });
   const handleUpdate = async (event) => {
     event.preventDefault();
-    const isFormValid = validateForm();
 
-    if (!isFormValid) {
+    if (content.trim() === "") {
+      setFormErrors({
+        content: "This field is required",
+      });
       return;
     }
     try {
@@ -97,6 +96,9 @@ function Post({ post }) {
   };
   const handlePost = async () => {
     if (message.trim() === "") {
+      setFormErrors({
+        message: "This field is required",
+      });
       return;
     }
     try {
@@ -144,38 +146,50 @@ function Post({ post }) {
   };
   return (
     <div className="post">
+      {error && <p className="error-message">{error}</p>}
       <div className="user">
-        <div>
-          {!post?.author?.photo ? (
-            <p>Image</p>
+        <div className="img-div">
+          {!post.author?.photo ? (
+            <img src={imageUrl} alt="default" className="responsive"></img>
           ) : (
-            <img src={post?.author?.photo} alt="user-image"></img>
+            <img
+              src={api + post?.author?.photo}
+              alt="user"
+              className="responsive"
+            ></img>
           )}
         </div>
         <div>
-          <p>{post?.author?.username || post?.author?.email}</p>
-          <p>{formattedDate}</p>
+          <p className="name">
+            {post.author?.username || post.author?.email || "user deleted"}
+          </p>
+          <p className="date">{formattedDate}</p>
         </div>
-        <div className="buttons">
-          <button
-            onClick={() => {
-              setOnEdit(true);
-              setContent(post.content);
-            }}
-          >
-            Edit
-          </button>
-          <button onClick={() => handleDelete()}>Delete</button>
-        </div>
+        {post.author?._id === user._id && (
+          <div className="buttons">
+            <button
+              onClick={() => {
+                setOnEdit(true);
+                setContent(post.content);
+              }}
+              className="edit"
+            >
+              Edit
+            </button>
+            <button onClick={() => handleDelete()} className="delete">
+              Delete
+            </button>
+          </div>
+        )}
       </div>
       <div className="content">
-        <p>{post.content}</p>
+        <p className="message">{post.content}</p>
         <div className="numbers">
           <p>{post.likedUsers.length} liked</p>
           <p>{post.comments.length} comments</p>
         </div>
       </div>
-      <div className="buttons">
+      <div className="buttons extra">
         <button onClick={() => handleLike()}>
           {post.likedUsers.some((likedUser) => likedUser._id === user._id)
             ? "Liked"
@@ -204,10 +218,17 @@ function Post({ post }) {
               onChange={(e) => setMessage(e.target.value)}
             />
             <button onClick={() => handlePost()}>Post</button>
+            {formErrors.message !== "" && (
+              <p className="error-message">{formErrors.message}</p>
+            )}
           </form>
           {comments.map((comment) => (
             <div className="comment" key={comment._id}>
-              <p>{comment.author?.username || comment.author?.email}</p>
+              <p>
+                {comment.author?.username ||
+                  comment.author?.email ||
+                  "user deleted"}
+              </p>
               <p className="message">{comment.message}</p>
               <p>{formatDate(comment.timestamp)}</p>
             </div>
@@ -226,9 +247,13 @@ function Post({ post }) {
                 placeholder="What's on your mind?"
                 rows="3"
                 value={content}
+                maxLength={200}
                 onChange={(e) => setContent(e.target.value)}
               />
               <button onClick={handleUpdate}>Update</button>
+              {formErrors.content !== "" && (
+                <p className="error-message">{formErrors.content}</p>
+              )}
             </form>
           </div>
           <div

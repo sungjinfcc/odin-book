@@ -77,6 +77,38 @@ const Login = () => {
       setError("An unexpected error occurred. Please try again later.");
     }
   };
+  const handleDemoLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(`${api}/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: "aaa@aaa.aaa", password: "Aaaa1111!" }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setError(error.message);
+        return;
+      }
+
+      const data = await response.json();
+
+      login(data.token, data.user);
+
+      // Save the token and user info in local storage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirect to the authenticated home page
+      navigator("/main");
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again later.");
+    }
+  };
 
   return (
     <div className="login">
@@ -112,6 +144,10 @@ const Login = () => {
             {" "}
             <Link to="/signup">Signup</Link>
           </span>
+        </p>
+        <p>
+          Start with Demo account :{" "}
+          <button onClick={handleDemoLogin}>Click here</button>
         </p>
       </form>
     </div>

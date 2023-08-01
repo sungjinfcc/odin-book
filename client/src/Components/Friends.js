@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../authContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Friends() {
   const api = process.env.REACT_APP_API_BASE_URL;
@@ -171,42 +171,54 @@ function Friends() {
 
   return (
     <div className="friends">
+      {error && <p className="error-message">{error}</p>}
       <div className="friend-requests">
         <h1>Friend Requests</h1>
+        <br></br>
         {friendRequests.map((request) => (
-          <div>
+          <div key={request._id} className="request">
             <p>{request.username || request.email}</p>
-            <button onClick={() => onAccept(request._id)}>Accept</button>
-            <button onClick={() => onDeny(request._id)}>Deny</button>
+            <div className="buttons">
+              <button className="blue" onClick={() => onAccept(request._id)}>
+                Accept
+              </button>
+              <button className="red" onClick={() => onDeny(request._id)}>
+                Deny
+              </button>
+            </div>
           </div>
         ))}
       </div>
       <div className="request-sent">
         <h1>Sent requests</h1>
         {sentRequests.map((request) => (
-          <div>
+          <div key={request._id} className="request">
             <p>{request.username || request.email}</p>
-            <button onClick={() => onCancel(request._id)}>
+            <button className="red" onClick={() => onCancel(request._id)}>
               Cancel request
             </button>
           </div>
         ))}
       </div>
-      <div className="friends">
+      <div className="friends-div">
         <h1>Friends</h1>
         {friends.map((friend) => (
-          <div>
+          <div key={friend._id} className="request">
             <p>{friend.username || friend.email}</p>
-            <button onClick={() => onDelete(friend._id)}>Delete</button>
+            <button className="red" onClick={() => onDelete(friend._id)}>
+              Delete
+            </button>
           </div>
         ))}
       </div>
       <div className="all-users">
         <h1>All users</h1>
         {userList.map((user) => (
-          <div>
+          <div key={user._id} className="request">
             <p>{user.username || user.email}</p>
-            <button onClick={() => onSend(user._id)}>Send request</button>
+            <button className="blue" onClick={() => onSend(user._id)}>
+              Send friend request
+            </button>
           </div>
         ))}
       </div>

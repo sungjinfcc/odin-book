@@ -3,6 +3,7 @@ import { useAuth } from "../authContext";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import Post from "./Modules/Post";
 
 function Main() {
@@ -14,6 +15,7 @@ function Main() {
   const [content, setContent] = useState("");
   const [me, setMe] = useState();
   const navigator = useNavigate();
+  const imageUrl = `${process.env.PUBLIC_URL}/assets/person_icon.png`;
 
   const validateForm = () => {
     const updatedErrors = {
@@ -48,7 +50,7 @@ function Main() {
 
   const getMe = async () => {
     try {
-      const response = await fetch(`${api}/user/${user._id}`, {
+      const response = await fetch(`${api}/user/${user?._id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -108,15 +110,16 @@ function Main() {
 
   return (
     <div className="main">
-      <div className="profile-card">
-        <div>
+      {error && <p className="error-message">{error}</p>}
+      <div className="profile-card responsive">
+        <div className="img-div">
           {!me?.photo ? (
-            <p>Image</p>
+            <img src={imageUrl} alt="default"></img>
           ) : (
-            <img src={me?.photo} alt="user-image"></img>
+            <img src={api + me?.photo} alt="user"></img>
           )}
         </div>
-        <h1>{me?.username || me?.email}</h1>
+        <h4>{me?.username || me?.email}</h4>
         <p>{me?.friends.length} friends</p>
         <div className="links">
           <Link to="/profile">View profile</Link>
@@ -124,13 +127,17 @@ function Main() {
         </div>
       </div>
       <div className="posts">
-        <button onClick={() => setOnEdit(true)}>+ Create post</button>
+        <button onClick={() => setOnEdit(true)} className="button-create">
+          <FontAwesomeIcon icon={faCirclePlus} /> Create post
+        </button>
         {posts.map((post) => (
-          <Post post={post} key={post._id} />
+          <Post post={post} key={post?._id} />
         ))}
+        <div className="gap"></div>
       </div>
-      <div className="copyright-card">
-        <p>Copyright © 2023 sungjinfcc</p>
+      <div className="copyright-card responsive">
+        <p>Copyright © 2023</p>
+        <p>sungjinfcc</p>
         <a
           href="https://github.com/sungjinfcc"
           target="_blank"
