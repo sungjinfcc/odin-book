@@ -14,8 +14,8 @@ function App() {
   const { login, logout } = useAuth();
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("token"));
-    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
 
     if (token) {
       login(token, user);

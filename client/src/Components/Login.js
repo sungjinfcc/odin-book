@@ -68,8 +68,8 @@ const Login = () => {
       login(data.token, data.user);
 
       // Save the token and user info in local storage
-      localStorage.setItem("token", JSON.stringify(data.token));
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", data.user);
 
       // Redirect to the authenticated home page
       navigator("/main");
